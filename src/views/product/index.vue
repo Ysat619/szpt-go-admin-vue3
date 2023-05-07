@@ -1,38 +1,38 @@
 <script lang="ts" setup>
-import { reactive, ref, watch } from "vue"
-import { type IGetTableData } from "@/api/table/types/table"
+import { getCurrentInstance, reactive, ref, watch } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { Search, Refresh, CirclePlus, Delete, RefreshRight } from "@element-plus/icons-vue"
+import { Search, Refresh, CirclePlus, Delete, RefreshRight, EditPen } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
 import GoodsAddForm from "./add.vue"
-import { getAllGoods, searchGoodsByName } from "@/api/goods"
+import { deleteGoods, getAllGoods, searchGoodsByName } from "@/api/goods"
 import { IGoods } from "@/api/goods/types/goods"
+import { pictureFieldToFileList } from "@/utils/image"
+import { cateIdToCascaderData } from "@/utils/category"
 
 defineOptions({
-  name: "ElementPlus",
+  name: "goods-list",
   components: {
     GoodsAddForm
-  }
+  },
+  methods: {}
 })
 
 const loading = ref<boolean>(false)
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
 const imgBase = reactive(import.meta.env.VITE_IMAGE_BASE_API)
-
-//#region 增
-const dialogVisible = ref<boolean>(false)
-const formData = reactive({
-  username: "",
-  password: ""
-})
-//#endregion
+const instance = getCurrentInstance()
 
 //#region 改
-const currentUpdateId = ref<undefined | string>(undefined)
-const handleUpdate = (row: IGetTableData) => {
-  currentUpdateId.value = row.id
-  formData.username = row.username
-  dialogVisible.value = true
+
+const handleUpdate = (row: IGoods) => {
+  // eslint-disable-next-line
+  instance.proxy.$refs.goodsAddForm.formData = row
+  instance.proxy.$refs.goodsAddForm.dialogVisible = true
+  instance.proxy.$refs.goodsAddForm.isEdit = true
+  // 图片处理
+  instance.proxy.$refs.goodsAddForm.pictureFileList = pictureFieldToFileList(row.picture)
+  const cates = instance.proxy.$refs.goodsAddForm.cateOptions
+  instance.proxy.$refs.goodsAddForm.formData.cate = cateIdToCascaderData(cates, row.cateId)
 }
 //#endregion
 
@@ -43,6 +43,20 @@ const pageData = (list: Array<IGoods>, currentPage = 1, pageSize = 10) => {
   const start = (currentPage - 1) * pageSize
   const end = start + pageSize
   return list.slice(start, end)
+}
+//#endregion
+
+//#region 删
+const handleDelete = (row: IGoods) => {
+  ElMessageBox.confirm(`您确定删除【${row.goodName}】吗？`, "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    deleteGoods(row.id)?.then(() => {
+      ElMessage.success("删除成功！")
+    })
+  })
 }
 //#endregion
 
@@ -157,16 +171,23 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
           <el-table-column prop="stock" label="库存" align="center" />
           <el-table-column prop="status" label="状态" align="center">
             <template #default="scope">
-              <el-tag v-if="scope.row.isShow" type="success">上架中</el-tag>
+              <el-tag v-if="scope.row.isShow" type="success">已上架</el-tag>
               <el-tag v-else type="danger" effect="light">已下架</el-tag>
               <el-tag v-if="scope.row.isNew" type="info" style="margin-left: 5px">新品</el-tag>
               <el-tag v-if="scope.row.isHot" type="danger" style="margin-left: 5px">热销</el-tag>
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <el-table-column fixed="right" label="操作" width="250" align="center">
             <template #default="scope">
-              <el-button type="primary" text bg size="small" @click="handleUpdate(scope.row)">修改</el-button>
-              <el-button type="danger" text bg size="small" @click="handleDelete(scope.row)">删除</el-button>
+              <!-- <el-button type="primary" size="small" :icon="Search" @click="handleDetail(scope.row)"
+                >查看详情</el-button
+              > -->
+              <el-button type="primary" text bg size="small" :icon="EditPen" @click="handleUpdate(scope.row)"
+                >修改</el-button
+              >
+              <el-button type="danger" text bg size="small" :icon="Delete" @click="handleDelete(scope.row)"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -185,7 +206,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
       </div>
     </el-card>
     <!-- 新增/修改 -->
-    <goods-add-form ref="goodsAddForm" />
+    <goods-add-form @afterSuccess="handleRefresh" ref="goodsAddForm" />
   </div>
 </template>
 

@@ -11,7 +11,7 @@ import {
   deleteCategoryType
 } from "@/api/category"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox, UploadProps } from "element-plus"
-import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight } from "@element-plus/icons-vue"
+import { CirclePlus, RefreshRight } from "@element-plus/icons-vue"
 import { ICategory, ICategoryType } from "@/api/category/types/category"
 
 defineOptions({

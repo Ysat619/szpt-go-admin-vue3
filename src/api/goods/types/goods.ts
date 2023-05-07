@@ -8,7 +8,8 @@ export interface ISku {
 }
 
 export interface IGoods {
-  cateId: BigInt
+  id?: string
+  cateId: string
   description: string
   goodInfo: string
   goodName: string
