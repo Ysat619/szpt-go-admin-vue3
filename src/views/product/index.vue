@@ -6,6 +6,9 @@ import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "elem
 import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
 import GoodsAddForm from "./add.vue"
+import { getAllGoods, searchGoodsByName } from "@/api/goods"
+import { IGoods } from "@/api/goods/types/goods"
+import { table } from "console"
 
 defineOptions({
   name: "ElementPlus",
@@ -16,6 +19,7 @@ defineOptions({
 
 const loading = ref<boolean>(false)
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
+const imgBase = reactive(import.meta.env.VITE_IMAGE_BASE_API)
 
 //#region 增
 const dialogVisible = ref<boolean>(false)
@@ -34,31 +38,44 @@ const handleUpdate = (row: IGetTableData) => {
 }
 //#endregion
 
+//#region 分页
+const pageData = (list: Array<IGoods>, currentPage = 1, pageSize = 10) => {
+  if (currentPage < 1) currentPage = 1
+  if (pageSize < 1) pageSize = 1
+  const start = (currentPage - 1) * pageSize
+  const end = start + pageSize
+  return list.slice(start, end)
+}
+//#endregion
+
 //#region 查
-const tableData = ref<IGetTableData[]>([])
+const tableData = ref<IGoods[]>([])
+const tableDataBySearch = ref<IGoods[]>([])
+
 const searchFormRef = ref<FormInstance | null>(null)
 const searchData = reactive({
-  username: "",
-  phone: ""
+  goodName: ""
 })
+const loadData = () => {
+  loading.value = true
+  getAllGoods().then((res) => {
+    tableData.value = res.data
+    paginationData.total = tableData.value.length
+    loading.value = false
+  })
+}
+loadData()
 const getTableData = () => {
   loading.value = true
-  getTableDataApi({
-    currentPage: paginationData.currentPage,
-    size: paginationData.pageSize,
-    username: searchData.username || undefined,
-    phone: searchData.phone || undefined
-  })
-    .then((res) => {
-      paginationData.total = res.data.total
-      tableData.value = res.data.list
+  if (searchData.goodName) {
+    searchGoodsByName(searchData.goodName).then((res) => {
+      tableDataBySearch.value = res.data
+      pageData(tableDataBySearch.value, paginationData.currentPage, paginationData.pageSize)
     })
-    .catch(() => {
-      tableData.value = []
-    })
-    .finally(() => {
-      loading.value = false
-    })
+  } else {
+    pageData(tableData.value, paginationData.currentPage, paginationData.pageSize)
+  }
+  loading.value = false
 }
 const handleSearch = () => {
   if (paginationData.currentPage === 1) {
@@ -74,7 +91,7 @@ const resetSearch = () => {
   paginationData.currentPage = 1
 }
 const handleRefresh = () => {
-  getTableData()
+  loadData()
 }
 //#endregion
 
@@ -87,10 +104,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <el-card v-loading="loading" shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="username" label="商品名称">
-          <el-input v-model="searchData.username" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item prop="phone" label="商品ID">
-          <el-input v-model="searchData.phone" placeholder="请输入" />
+          <el-input v-model="searchData.goodName" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
@@ -115,22 +129,40 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
       <div class="table-wrapper">
         <el-table :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="username" label="用户名" align="center" />
-          <el-table-column prop="roles" label="角色" align="center">
+          <el-table-column prop="id" label="商品ID" width="180" align="center" />
+          <el-table-column prop="goodName" label="商品" align="center">
             <template #default="scope">
-              <el-tag v-if="scope.row.roles === 'admin'" effect="plain">admin</el-tag>
-              <el-tag v-else type="warning" effect="plain">{{ scope.row.roles }}</el-tag>
+              <el-row v-if="scope.row.picture" justify="center">
+                <el-image
+                  style="width: 80px; height: 80px; border-radius: 5px; margin-bottom: 5px"
+                  :src="imgBase + scope.row.picture.split(',')[0]"
+                />
+              </el-row>
+              <el-text>{{ scope.row.goodName }}</el-text>
             </template>
           </el-table-column>
-          <el-table-column prop="phone" label="手机号" align="center" />
-          <el-table-column prop="email" label="邮箱" align="center" />
+          <el-table-column prop="goodInfo" label="商品简介" align="center" />
+          <el-table-column prop="status" label="价格">
+            <template #default="scope">
+              <el-row> <el-tag type="info">原价</el-tag>￥{{ scope.row.otPrice }}/{{ scope.row.unitName }} </el-row>
+              <el-row style="margin-top: 5px"
+                ><el-tag type="success">现价</el-tag>￥{{ scope.row.price }}/{{ scope.row.unitName }}</el-row
+              >
+              <el-row style="margin-top: 5px"
+                ><el-tag type="danger">会员价</el-tag>￥{{ scope.row.vipPrice }}/{{ scope.row.unitName }}</el-row
+              >
+            </template>
+          </el-table-column>
+          <el-table-column prop="sales" label="销售额" align="center" />
+          <el-table-column prop="stock" label="库存" align="center" />
           <el-table-column prop="status" label="状态" align="center">
             <template #default="scope">
-              <el-tag v-if="scope.row.status" type="success" effect="plain">启用</el-tag>
-              <el-tag v-else type="danger" effect="plain">禁用</el-tag>
+              <el-tag v-if="scope.row.isShow" type="success">上架中</el-tag>
+              <el-tag v-else type="danger" effect="light">已下架</el-tag>
+              <el-tag v-if="scope.row.isNew" type="info" style="margin-left: 5px">新品</el-tag>
+              <el-tag v-if="scope.row.isHot" type="danger" style="margin-left: 5px">热销</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="createTime" label="创建时间" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button type="primary" text bg size="small" @click="handleUpdate(scope.row)">修改</el-button>

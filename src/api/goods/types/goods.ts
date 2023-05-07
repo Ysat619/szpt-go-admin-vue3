@@ -7,7 +7,7 @@ export interface ISku {
   skuTypeId: string
 }
 
-export interface IGoodsAdd {
+export interface IGoods {
   cateId: BigInt
   description: string
   goodInfo: string
