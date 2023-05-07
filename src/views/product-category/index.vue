@@ -21,7 +21,7 @@ defineOptions({
 const loading = ref<boolean>(false)
 
 const imgBase = reactive(import.meta.env.VITE_IMAGE_BASE_API)
-const updateApi = reactive(import.meta.env.VITE_IMAGE_UPLOAD_API)
+const uploadApi = reactive(import.meta.env.VITE_IMAGE_UPLOAD_API)
 
 // 判断当前是否是在父分类
 function isParentCat() {
@@ -279,7 +279,7 @@ getTableData()
             <el-upload
               class="upload-demo"
               drag
-              :action="updateApi"
+              :action="uploadApi"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
             >

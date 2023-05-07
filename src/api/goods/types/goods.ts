@@ -7,26 +7,21 @@ export interface ISku {
   skuTypeId: string
 }
 
-export interface IGoods {
+export interface IGoodsAdd {
   cateId: BigInt
-  createTime?: string
   description: string
   goodInfo: string
   goodName: string
-  id?: number
-  isDel: boolean
   isHot: boolean
   isNew: boolean
   isShow: boolean
+  isDel: boolean
   keyword: string
   otPrice: number
   picture: string
   price: number
   sales: number
   shopId: number
-  skuTypes: TbSkuType[]
-  skus: TbSku[]
-  sort?: boolean
   stock: number
   unitName: string
   updateTime: string

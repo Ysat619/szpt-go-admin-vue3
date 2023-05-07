@@ -16,9 +16,13 @@ import "element-plus/theme-chalk/dark/css-vars.css"
 import "vxe-table/lib/style.css"
 import "vxe-table-plugin-element/dist/style.css"
 import "@/styles/index.scss"
+import { QuillEditor } from "@vueup/vue-quill"
+import "@vueup/vue-quill/dist/vue-quill.snow.css"
 
 const app = createApp(App)
 app.config.globalProperties.imgPrefix = import.meta.env.VITE_IMAGE_BASE_API
+
+app.component("QuillEditor", QuillEditor)
 
 /** 加载插件 */
 loadPlugins(app)

@@ -5,9 +5,13 @@ import { type IGetTableData } from "@/api/table/types/table"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
+import GoodsAddForm from "./add.vue"
 
 defineOptions({
-  name: "ElementPlus"
+  name: "ElementPlus",
+  components: {
+    GoodsAddForm
+  }
 })
 
 const loading = ref<boolean>(false)
@@ -149,7 +153,9 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="dialogVisible = true">新增商品</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="$refs.goodsAddForm.dialogVisible = true"
+            >新增商品</el-button
+          >
           <el-button type="danger" :icon="Delete">批量删除</el-button>
         </div>
         <div>
@@ -199,25 +205,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
       </div>
     </el-card>
     <!-- 新增/修改 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="currentUpdateId === undefined ? '新增用户' : '修改用户'"
-      @close="resetForm"
-      width="30%"
-    >
-      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" label-position="left">
-        <el-form-item prop="username" label="用户名">
-          <el-input v-model="formData.username" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item prop="password" label="密码" v-if="currentUpdateId === undefined">
-          <el-input v-model="formData.password" placeholder="请输入" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleCreate">确认</el-button>
-      </template>
-    </el-dialog>
+    <goods-add-form ref="goodsAddForm" />
   </div>
 </template>
 
