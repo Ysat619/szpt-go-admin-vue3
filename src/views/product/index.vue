@@ -1,14 +1,12 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
-import { createTableDataApi, deleteTableDataApi, updateTableDataApi, getTableDataApi } from "@/api/table"
 import { type IGetTableData } from "@/api/table/types/table"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight } from "@element-plus/icons-vue"
+import { Search, Refresh, CirclePlus, Delete, RefreshRight } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
 import GoodsAddForm from "./add.vue"
 import { getAllGoods, searchGoodsByName } from "@/api/goods"
 import { IGoods } from "@/api/goods/types/goods"
-import { table } from "console"
 
 defineOptions({
   name: "ElementPlus",
@@ -49,6 +47,7 @@ const pageData = (list: Array<IGoods>, currentPage = 1, pageSize = 10) => {
 //#endregion
 
 //#region 查
+const currentTableData = ref<IGoods[]>([])
 const tableData = ref<IGoods[]>([])
 const tableDataBySearch = ref<IGoods[]>([])
 
@@ -61,6 +60,7 @@ const loadData = () => {
   getAllGoods().then((res) => {
     tableData.value = res.data
     paginationData.total = tableData.value.length
+    currentTableData.value = tableData.value
     loading.value = false
   })
 }
@@ -70,10 +70,10 @@ const getTableData = () => {
   if (searchData.goodName) {
     searchGoodsByName(searchData.goodName).then((res) => {
       tableDataBySearch.value = res.data
-      pageData(tableDataBySearch.value, paginationData.currentPage, paginationData.pageSize)
+      currentTableData.value = pageData(tableDataBySearch.value, paginationData.currentPage, paginationData.pageSize)
     })
   } else {
-    pageData(tableData.value, paginationData.currentPage, paginationData.pageSize)
+    currentTableData.value = pageData(tableData.value, paginationData.currentPage, paginationData.pageSize)
   }
   loading.value = false
 }
@@ -103,7 +103,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   <div class="app-container">
     <el-card v-loading="loading" shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="username" label="商品名称">
+        <el-form-item prop="goodName" label="商品名称">
           <el-input v-model="searchData.goodName" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
@@ -127,7 +127,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table :data="tableData">
+        <el-table :data="currentTableData">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column prop="id" label="商品ID" width="180" align="center" />
           <el-table-column prop="goodName" label="商品" align="center">
