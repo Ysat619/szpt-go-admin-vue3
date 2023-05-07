@@ -19,62 +19,10 @@ const { paginationData, handleCurrentChange, handleSizeChange } = usePagination(
 
 //#region 增
 const dialogVisible = ref<boolean>(false)
-const formRef = ref<FormInstance | null>(null)
 const formData = reactive({
   username: "",
   password: ""
 })
-const formRules: FormRules = reactive({
-  username: [{ required: true, trigger: "blur", message: "请输入用户名" }],
-  password: [{ required: true, trigger: "blur", message: "请输入密码" }]
-})
-const handleCreate = () => {
-  formRef.value?.validate((valid: boolean) => {
-    if (valid) {
-      if (currentUpdateId.value === undefined) {
-        createTableDataApi({
-          username: formData.username,
-          password: formData.password
-        }).then(() => {
-          ElMessage.success("新增成功")
-          dialogVisible.value = false
-          getTableData()
-        })
-      } else {
-        updateTableDataApi({
-          id: currentUpdateId.value,
-          username: formData.username
-        }).then(() => {
-          ElMessage.success("修改成功")
-          dialogVisible.value = false
-          getTableData()
-        })
-      }
-    } else {
-      return false
-    }
-  })
-}
-const resetForm = () => {
-  currentUpdateId.value = undefined
-  formData.username = ""
-  formData.password = ""
-}
-//#endregion
-
-//#region 删
-const handleDelete = (row: IGetTableData) => {
-  ElMessageBox.confirm(`正在删除用户：${row.username}，确认删除？`, "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning"
-  }).then(() => {
-    deleteTableDataApi(row.id).then(() => {
-      ElMessage.success("删除成功")
-      getTableData()
-    })
-  })
-}
 //#endregion
 
 //#region 改
