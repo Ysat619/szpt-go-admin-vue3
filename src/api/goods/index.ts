@@ -28,6 +28,13 @@ export function getAllGoods(current = 1, size = 99999, total = 99999) {
   })
 }
 
+export function getGoods(id: string | undefined) {
+  return request<Responce<Goods.IGoods>>({
+    url: `TbGood/${id}`,
+    method: "get"
+  })
+}
+
 export function searchGoodsByName(name: string, current = 1, size = 99999, total = 99999) {
   return request<Responce<Goods.IGoods[]>>({
     url: `TbGood/getListByName/${current}/${size}/${total}/${name}`,

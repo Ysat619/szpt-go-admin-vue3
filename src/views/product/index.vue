@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { getCurrentInstance, reactive, ref, watch } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { Search, Refresh, CirclePlus, Delete, RefreshRight, EditPen } from "@element-plus/icons-vue"
+import { Search, Refresh, CirclePlus, Delete, RefreshRight, EditPen, Goods } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
 import GoodsAddForm from "./add.vue"
+import SkuDialog from "./sku.vue"
 import { deleteGoods, getAllGoods, searchGoodsByName } from "@/api/goods"
 import { IGoods } from "@/api/goods/types/goods"
 import { pictureFieldToFileList } from "@/utils/image"
@@ -12,7 +13,8 @@ import { cateIdToCascaderData } from "@/utils/category"
 defineOptions({
   name: "goods-list",
   components: {
-    GoodsAddForm
+    GoodsAddForm,
+    SkuDialog
   },
   methods: {}
 })
@@ -21,6 +23,7 @@ const loading = ref<boolean>(false)
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
 const imgBase = reactive(import.meta.env.VITE_IMAGE_BASE_API)
 const instance = getCurrentInstance()
+const currentGoods = ref<IGoods>()
 
 //#region 改
 
@@ -33,6 +36,10 @@ const handleUpdate = (row: IGoods) => {
   instance.proxy.$refs.goodsAddForm.pictureFileList = pictureFieldToFileList(row.picture)
   const cates = instance.proxy.$refs.goodsAddForm.cateOptions
   instance.proxy.$refs.goodsAddForm.formData.cate = cateIdToCascaderData(cates, row.cateId)
+}
+const handleSku = (row: IGoods) => {
+  console.log(instance.proxy.$refs.sku)
+  instance.proxy.$refs.sku.openDialog(row)
 }
 //#endregion
 
@@ -144,7 +151,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
         <el-table :data="currentTableData">
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column prop="id" label="商品ID" width="180" align="center" />
-          <el-table-column prop="goodName" label="商品" align="center">
+          <el-table-column prop="goodName" label="商品" min-width="100" align="center">
             <template #default="scope">
               <el-row v-if="scope.row.picture" justify="center">
                 <el-image
@@ -156,7 +163,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
             </template>
           </el-table-column>
           <el-table-column prop="goodInfo" label="商品简介" align="center" />
-          <el-table-column prop="status" label="价格">
+          <el-table-column prop="status" min-width="120" align="left" label="价格">
             <template #default="scope">
               <el-row> <el-tag type="info">原价</el-tag>￥{{ scope.row.otPrice }}/{{ scope.row.unitName }} </el-row>
               <el-row style="margin-top: 5px"
@@ -177,11 +184,12 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
               <el-tag v-if="scope.row.isHot" type="danger" style="margin-left: 5px">热销</el-tag>
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="操作" width="250" align="center">
+          <el-table-column fixed="right" label="操作" width="260" align="center">
             <template #default="scope">
-              <!-- <el-button type="primary" size="small" :icon="Search" @click="handleDetail(scope.row)"
-                >查看详情</el-button
-              > -->
+              <el-button type="success" text bg size="small" :icon="Goods" @click="handleSku(scope.row)"
+                >管理SKU</el-button
+              >
+
               <el-button type="primary" text bg size="small" :icon="EditPen" @click="handleUpdate(scope.row)"
                 >修改</el-button
               >
@@ -207,6 +215,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     </el-card>
     <!-- 新增/修改 -->
     <goods-add-form @afterSuccess="handleRefresh" ref="goodsAddForm" />
+    <sku-dialog :goods="currentGoods" ref="sku" />
   </div>
 </template>
 

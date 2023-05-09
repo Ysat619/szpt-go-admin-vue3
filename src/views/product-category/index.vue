@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
-import { createTableDataApi, deleteTableDataApi, updateTableDataApi } from "@/api/table"
 import {
   getCategoryType,
   addCategoryType,
@@ -19,7 +18,6 @@ defineOptions({
 })
 
 const loading = ref<boolean>(false)
-
 const imgBase = reactive(import.meta.env.VITE_IMAGE_BASE_API)
 const uploadApi = reactive(import.meta.env.VITE_IMAGE_UPLOAD_API)
 

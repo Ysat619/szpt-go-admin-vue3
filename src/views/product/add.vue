@@ -269,7 +269,7 @@ export default defineComponent({
             instance.proxy.$emit("afterSuccess")
           })
         } else {
-          addGoods(goodsData).then(() => {
+          editGoods(goodsData).then(() => {
             ElMessage.success("修改成功")
             resetForm()
             instance.proxy.$emit("afterSuccess")
@@ -283,7 +283,7 @@ export default defineComponent({
       state.dialogVisible = false
     }
     const resetFormConfirm = async () => {
-      const res = await ElMessageBox.confirm(`确认取消吗？取消后您所填写的内容将会消失`, "提示", {
+      const res = await ElMessageBox.confirm(`确认取消吗？取消后您所编辑过内容将不会保存`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"

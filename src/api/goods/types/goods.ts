@@ -1,10 +1,16 @@
 export interface ISku {
-  id: number
+  id: string
   name: string
   picture: string
   price: number
   productId: string
   skuTypeId: string
+}
+
+export interface ISkuType {
+  id: string
+  name: string
+  skus?: ISku[]
 }
 
 export interface IGoods {
@@ -27,4 +33,5 @@ export interface IGoods {
   unitName: string
   updateTime: string
   vipPrice: number
+  skuTypes: ISkuType[]
 }
