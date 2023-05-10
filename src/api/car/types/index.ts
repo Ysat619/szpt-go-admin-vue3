@@ -18,3 +18,9 @@ export interface IBrand {
   brandName: string
   brandCountryId: string
 }
+
+export interface ICarSeries {
+  seriesId: string
+  seriesName: string
+  brandId: string
+}
