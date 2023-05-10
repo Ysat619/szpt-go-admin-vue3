@@ -125,9 +125,9 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       },
       {
-        path: "vxe-table",
-        component: () => import("@/views/user/index.vue"),
-        name: "VxeTable",
+        path: "country",
+        component: () => import("@/views/car/country.vue"),
+        name: "country",
         meta: {
           title: "国别管理",
           keepAlive: true,
