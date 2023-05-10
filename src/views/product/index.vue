@@ -22,7 +22,7 @@ defineOptions({
 const loading = ref<boolean>(false)
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
 const imgBase = reactive(import.meta.env.VITE_IMAGE_BASE_API)
-const instance = getCurrentInstance()
+const instance: any = getCurrentInstance()
 const currentGoods = ref<IGoods>()
 
 //#region 改
@@ -136,7 +136,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="$refs.goodsAddForm.dialogVisible = true"
+          <el-button type="primary" :icon="CirclePlus" @click="instance.proxy.$refs.goodsAddForm.dialogVisible = true"
             >新增商品</el-button
           >
           <el-button type="danger" :icon="Delete">批量删除</el-button>

@@ -6,11 +6,12 @@
     "module": "esnext",
     "moduleResolution": "node",
     /** TS 严格模式 */
-    "strict": true,
+    "strict": false,
     "jsx": "preserve",
     "importHelpers": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     /** https://cn.vitejs.dev/guide/features.html#typescript-compiler-options */

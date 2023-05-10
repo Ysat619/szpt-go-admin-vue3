@@ -116,7 +116,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: "element-plus",
-        component: () => import("@/views/table/element-plus/index.vue"),
+        component: () => import("@/views/user/index.vue"),
         name: "ElementPlus",
         meta: {
           title: "汽车列表",
@@ -126,7 +126,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "vxe-table",
-        component: () => import("@/views/table/vxe-table/index.vue"),
+        component: () => import("@/views/user/index.vue"),
         name: "VxeTable",
         meta: {
           title: "国别管理",
@@ -136,7 +136,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "vxe-table",
-        component: () => import("@/views/table/vxe-table/index.vue"),
+        component: () => import("@/views/user/index.vue"),
         name: "VxeTable",
         meta: {
           title: "品牌管理",
@@ -146,7 +146,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "vxe-table",
-        component: () => import("@/views/table/vxe-table/index.vue"),
+        component: () => import("@/views/user/index.vue"),
         name: "VxeTable",
         meta: {
           title: "能源类型管理",
@@ -156,7 +156,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "vxe-table",
-        component: () => import("@/views/table/vxe-table/index.vue"),
+        component: () => import("@/views/user/index.vue"),
         name: "VxeTable",
         meta: {
           title: "车系管理",
@@ -166,7 +166,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "vxe-table",
-        component: () => import("@/views/table/vxe-table/index.vue"),
+        component: () => import("@/views/user/index.vue"),
         name: "VxeTable",
         meta: {
           title: "车型管理",
@@ -188,7 +188,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: "list",
-        component: () => import("@/views/order/element-plus/index.vue"),
+        component: () => import("@/views/user/index.vue"),
         name: "ElementPlus",
         meta: {
           title: "订单列表",
@@ -198,7 +198,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "vxe-table",
-        component: () => import("@/views/table/vxe-table/index.vue"),
+        component: () => import("@/views/user/index.vue"),
         name: "VxeTable",
         meta: {
           title: "评价列表",

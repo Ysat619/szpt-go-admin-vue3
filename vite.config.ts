@@ -40,6 +40,7 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
       proxy: {
         "/api/v1": {
           target: "http://110.41.150.2:32976",
+          // target: "http://127.0.0.1:8087",
           ws: true,
           /** 是否允许跨域 */
           changeOrigin: true,

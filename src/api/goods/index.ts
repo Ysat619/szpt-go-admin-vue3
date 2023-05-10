@@ -52,3 +52,54 @@ export function deleteGoods(id: string | undefined) {
     method: "delete"
   })
 }
+
+export function addSkuType(skuTypeName: string) {
+  return request<Responce<string>>({
+    url: `TbSkuType`,
+    method: "post",
+    data: {
+      name: skuTypeName
+    }
+  })
+}
+
+export function editSkuType(skuTypeName: string, id: string) {
+  return request<Responce<boolean>>({
+    url: `TbSkuType/${id}`,
+    method: "put",
+    data: {
+      name: skuTypeName,
+      id: id
+    }
+  })
+}
+
+export function delSkuType(id: string) {
+  return request<Responce<boolean>>({
+    url: `TbSkuType/${id}`,
+    method: "delete"
+  })
+}
+
+export function addSku(sku: Goods.ISku) {
+  return request<Responce<string>>({
+    url: `TbSku`,
+    method: "post",
+    data: sku
+  })
+}
+
+export function editSku(sku: Goods.ISku) {
+  return request<Responce<boolean>>({
+    url: `TbSku/${sku.id}`,
+    method: "put",
+    data: sku
+  })
+}
+
+export function delSku(id: string) {
+  return request<Responce<boolean>>({
+    url: `TbSku/${id}`,
+    method: "delete"
+  })
+}
