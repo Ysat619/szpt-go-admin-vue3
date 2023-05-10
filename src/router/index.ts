@@ -145,9 +145,9 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       },
       {
-        path: "vxe-table",
-        component: () => import("@/views/user/index.vue"),
-        name: "VxeTable",
+        path: "power-type",
+        component: () => import("@/views/car/power-type.vue"),
+        name: "power-type",
         meta: {
           title: "能源类型管理",
           keepAlive: true,
