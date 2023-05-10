@@ -124,20 +124,11 @@ export const constantRoutes: RouteRecordRaw[] = [
           elIcon: "List"
         }
       },
+
       {
-        path: "country",
-        component: () => import("@/views/car/country.vue"),
-        name: "country",
-        meta: {
-          title: "国别管理",
-          keepAlive: true,
-          svgIcon: "globe-asia"
-        }
-      },
-      {
-        path: "vxe-table",
-        component: () => import("@/views/user/index.vue"),
-        name: "VxeTable",
+        path: "brand",
+        component: () => import("@/views/car/brand.vue"),
+        name: "brand",
         meta: {
           title: "品牌管理",
           keepAlive: true,
@@ -173,6 +164,16 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: "车型管理",
           keepAlive: true,
           svgIcon: "4-汽车型号"
+        }
+      },
+      {
+        path: "country",
+        component: () => import("@/views/car/country.vue"),
+        name: "country",
+        meta: {
+          title: "国别管理",
+          keepAlive: true,
+          svgIcon: "globe-asia"
         }
       }
     ]

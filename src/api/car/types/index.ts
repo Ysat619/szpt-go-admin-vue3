@@ -12,3 +12,9 @@ export interface ICarType {
   typeId: string
   typeName: string
 }
+
+export interface IBrand {
+  brandId: string
+  brandName: string
+  brandCountryId: string
+}
