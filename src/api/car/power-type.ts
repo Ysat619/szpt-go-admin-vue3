@@ -26,7 +26,7 @@ export function delPowerType(id: string) {
 
 export function editPowerType(powerType: IPowerType) {
   return request<Responce<boolean>>({
-    url: `TbCarPowerType`,
+    url: `TbCarPowerType/${powerType.powerTypeId}`,
     method: "put",
     data: powerType
   })

@@ -26,7 +26,7 @@ export function delCountry(id: string) {
 
 export function editCountry(country: ICountry) {
   return request<Responce<boolean>>({
-    url: `TbCarCountry`,
+    url: `TbCarCountry/${country.countryId}`,
     method: "put",
     data: country
   })

@@ -145,16 +145,6 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       },
       {
-        path: "power-type",
-        component: () => import("@/views/car/power-type.vue"),
-        name: "power-type",
-        meta: {
-          title: "能源类型管理",
-          keepAlive: true,
-          svgIcon: "power"
-        }
-      },
-      {
         path: "vxe-table",
         component: () => import("@/views/user/index.vue"),
         name: "VxeTable",
@@ -165,9 +155,20 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       },
       {
-        path: "vxe-table",
-        component: () => import("@/views/user/index.vue"),
-        name: "VxeTable",
+        path: "power-type",
+        component: () => import("@/views/car/power-type.vue"),
+        name: "power-type",
+        meta: {
+          title: "能源类型管理",
+          keepAlive: true,
+          svgIcon: "power"
+        }
+      },
+
+      {
+        path: "car-type",
+        component: () => import("@/views/car/car-type.vue"),
+        name: "car-type",
         meta: {
           title: "车型管理",
           keepAlive: true,
