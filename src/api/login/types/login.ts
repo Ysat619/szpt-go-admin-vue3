@@ -7,6 +7,22 @@ export interface ILoginRequestData {
   code?: string
 }
 
+export interface IUser {
+  id: string
+  name: string
+  phone: string
+  roleId: string
+  addrId: string
+  createDate: string
+  updateDate: string
+  level: number
+  balance: number
+  avatar: string
+  mail: string
+  message: string
+  token: null | string
+}
+
 export type LoginCodeResponseData = IApiResponseData<string>
 
 export type LoginResponseData = IApiResponseData<{ token: string }>

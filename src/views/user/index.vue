@@ -1,16 +1,19 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
-import { createTableDataApi, deleteTableDataApi, updateTableDataApi, getTableDataApi } from "@/api/table"
 import { type IGetTableData } from "@/api/table/types/table"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
+import { IUser } from "@/api/login/types/login"
+import { delUser, geUserList, registerUser } from "@/api/login/index"
 
 defineOptions({
   name: "ElementPlus"
 })
 
 const loading = ref<boolean>(false)
+const imgBase = reactive(import.meta.env.VITE_IMAGE_BASE_API)
+// const uploadApi = reactive(import.meta.env.VITE_IMAGE_UPLOAD_API)
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
 
 //#region 增
@@ -20,31 +23,46 @@ const formData = reactive({
   username: "",
   password: ""
 })
-const formRules: FormRules = reactive({
-  username: [{ required: true, trigger: "blur", message: "请输入用户名" }],
-  password: [{ required: true, trigger: "blur", message: "请输入密码" }]
+//#region 校验
+const validatePassword = (rule, value, callback) => {
+  if (!value) {
+    return callback(new Error("请输入密码"))
+  }
+  if (value.length < 6 || value.length > 16) {
+    return callback(new Error("密码长度应为6-16位"))
+  }
+  callback()
+}
+const formRules: any = reactive({
+  username: [
+    { required: true, trigger: "blur", message: "请输入手机号" },
+    { pattern: /^1[3456789]\d{9}$/, message: "请输入正确的手机号码", trigger: "blur" }
+  ],
+  password: [
+    { required: true, trigger: "blur", message: "请输入密码" },
+    { validator: validatePassword, trigger: "blur" }
+  ]
 })
+//#endregion
 const handleCreate = () => {
   formRef.value?.validate((valid: boolean) => {
     if (valid) {
       if (currentUpdateId.value === undefined) {
-        createTableDataApi({
+        registerUser({
           username: formData.username,
           password: formData.password
-        }).then(() => {
-          ElMessage.success("新增成功")
-          dialogVisible.value = false
-          getTableData()
+        }).then((res) => {
+          if (res.data) {
+            ElMessage.success("新增成功")
+            dialogVisible.value = false
+            getTableData()
+          } else {
+            ElMessage.error("新增失败")
+          }
         })
       } else {
-        updateTableDataApi({
-          id: currentUpdateId.value,
-          username: formData.username
-        }).then(() => {
-          ElMessage.success("修改成功")
-          dialogVisible.value = false
-          getTableData()
-        })
+        //
+        console.log("TODO")
       }
     } else {
       return false
@@ -59,21 +77,30 @@ const resetForm = () => {
 //#endregion
 
 //#region 删
-const handleDelete = (row: IGetTableData) => {
-  ElMessageBox.confirm(`正在删除用户：${row.username}，确认删除？`, "提示", {
+const handleDelete = (row: IUser) => {
+  ElMessageBox.confirm(`正在删除用户：${row.name}，确认删除？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
   }).then(() => {
-    deleteTableDataApi(row.id).then(() => {
-      ElMessage.success("删除成功")
-      getTableData()
+    delUser(row.id).then((res) => {
+      if (res.data) {
+        ElMessage.success("删除成功")
+        getTableData()
+      } else {
+        ElMessage.error("删除失败")
+      }
     })
   })
 }
 //#endregion
 
 //#region 改
+const editFormData = ref<IUser>()
+const editFormRules = reactive({
+  mail: [{ required: true, trigger: "blur", message: "请输入邮箱" }],
+  name: [{ required: true, trigger: "blur", message: "请输入昵称" }]
+})
 const currentUpdateId = ref<undefined | string>(undefined)
 const handleUpdate = (row: IGetTableData) => {
   currentUpdateId.value = row.id
@@ -83,7 +110,7 @@ const handleUpdate = (row: IGetTableData) => {
 //#endregion
 
 //#region 查
-const tableData = ref<IGetTableData[]>([])
+const tableData = ref<IUser[]>([])
 const searchFormRef = ref<FormInstance | null>(null)
 const searchData = reactive({
   username: "",
@@ -91,22 +118,12 @@ const searchData = reactive({
 })
 const getTableData = () => {
   loading.value = true
-  getTableDataApi({
-    currentPage: paginationData.currentPage,
-    size: paginationData.pageSize,
-    username: searchData.username || undefined,
-    phone: searchData.phone || undefined
+  geUserList().then((res) => {
+    const users = res.data
+    paginationData.total = users.length
+    tableData.value = users
   })
-    .then((res) => {
-      paginationData.total = res.data.total
-      tableData.value = res.data.list
-    })
-    .catch(() => {
-      tableData.value = []
-    })
-    .finally(() => {
-      loading.value = false
-    })
+  loading.value = false
 }
 const handleSearch = () => {
   if (paginationData.currentPage === 1) {
@@ -164,22 +181,23 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
       <div class="table-wrapper">
         <el-table :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="username" label="用户名" align="center" />
-          <el-table-column prop="roles" label="角色" align="center">
+          <el-table-column prop="name" label="头像" align="center">
             <template #default="scope">
-              <el-tag v-if="scope.row.roles === 'admin'" effect="plain">admin</el-tag>
-              <el-tag v-else type="warning" effect="plain">{{ scope.row.roles }}</el-tag>
+              <el-image type="success" :src="imgBase + scope.row.avatar" effect="plain" />
             </template>
           </el-table-column>
+          <el-table-column prop="name" label="用户名" align="center" />
+          <el-table-column prop="roleId" label="角色" align="center" />
           <el-table-column prop="phone" label="手机号" align="center" />
-          <el-table-column prop="email" label="邮箱" align="center" />
-          <el-table-column prop="status" label="状态" align="center">
+          <el-table-column prop="mail" label="邮箱" align="center" />
+          <!-- <el-table-column prop="status" label="等级" align="center">
             <template #default="scope">
-              <el-tag v-if="scope.row.status" type="success" effect="plain">启用</el-tag>
-              <el-tag v-else type="danger" effect="plain">禁用</el-tag>
+              <el-tag>LV{{ scope.row.level }}</el-tag>
             </template>
-          </el-table-column>
-          <el-table-column prop="createTime" label="创建时间" align="center" />
+          </el-table-column> -->
+          <el-table-column prop="message" label="留言" align="center" />
+          <el-table-column prop="balance" label="余额(￥)" align="center" />
+          <el-table-column prop="createDate" label="创建时间" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button type="primary" text bg size="small" @click="handleUpdate(scope.row)">修改</el-button>
@@ -201,19 +219,46 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
         />
       </div>
     </el-card>
-    <!-- 新增/修改 -->
+    <!-- 对话框 -->
     <el-dialog
       v-model="dialogVisible"
       :title="currentUpdateId === undefined ? '新增用户' : '修改用户'"
       @close="resetForm"
       width="30%"
     >
-      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" label-position="left">
-        <el-form-item prop="username" label="用户名">
+      <!-- 新增 -->
+      <el-form
+        v-if="currentUpdateId === undefined"
+        ref="formRef"
+        :model="formData"
+        :rules="formRules"
+        label-width="100px"
+        label-position="left"
+      >
+        <el-form-item prop="username" label="手机号">
           <el-input v-model="formData.username" placeholder="请输入" />
         </el-form-item>
-        <el-form-item prop="password" label="密码" v-if="currentUpdateId === undefined">
+        <el-form-item prop="password" label="密码">
           <el-input v-model="formData.password" placeholder="请输入" />
+        </el-form-item>
+      </el-form>
+      <!-- 修改 -->
+      <el-form
+        v-else
+        ref="editFormRef"
+        :model="editFormData"
+        :rules="editFormRules"
+        label-width="100px"
+        label-position="left"
+      >
+        <el-form-item prop="mail" label="昵称">
+          <el-input v-model="editFormData.name" placeholder="请输入昵称" />
+        </el-form-item>
+        <el-form-item prop="mail" label="邮箱">
+          <el-input v-model="editFormData.mail" placeholder="请输入邮箱" />
+        </el-form-item>
+        <el-form-item prop="password" label="个人签名">
+          <el-input v-model="editFormData.message" placeholder="请输入个人签名" />
         </el-form-item>
       </el-form>
       <template #footer>

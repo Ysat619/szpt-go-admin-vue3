@@ -2,10 +2,8 @@
 import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
-import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
-import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
+import { User, Lock } from "@element-plus/icons-vue"
 import { type FormInstance, FormRules } from "element-plus"
-import { getLoginCodeApi } from "@/api/login"
 import { type ILoginRequestData } from "@/api/login/types/login"
 
 const router = useRouter()
@@ -13,13 +11,10 @@ const loginFormRef = ref<FormInstance | null>(null)
 
 /** 登录按钮 Loading */
 const loading = ref(false)
-/** 验证码图片 URL */
-// const codeUrl = ref("")
 /** 登录表单数据 */
 const loginForm: ILoginRequestData = reactive({
   username: "17788770021",
-  password: "123456",
-  code: ""
+  password: "123456"
 })
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
@@ -39,13 +34,11 @@ const handleLogin = () => {
         .login({
           username: loginForm.username,
           password: loginForm.password
-          // code: loginForm.code
         })
         .then(() => {
           router.push({ path: "/" })
         })
         .catch(() => {
-          createCode()
           loginForm.password = ""
         })
         .finally(() => {
@@ -56,20 +49,6 @@ const handleLogin = () => {
     }
   })
 }
-/** 创建验证码 */
-const createCode = () => {
-  return
-  // 先清空验证码的输入
-  // loginForm.code = ""
-  // // 获取验证码
-  // codeUrl.value = ""
-  // getLoginCodeApi().then((res) => {
-  //   codeUrl.value = res.data
-  // })
-}
-
-/** 初始化验证码 */
-// createCode()
 </script>
 
 <template>
@@ -102,28 +81,6 @@ const createCode = () => {
               show-password
             />
           </el-form-item>
-          <!-- <el-form-item prop="code">
-            <el-input
-              v-model.trim="loginForm.code"
-              placeholder="验证码"
-              type="text"
-              tabindex="3"
-              :prefix-icon="Key"
-              maxlength="7"
-              size="large"
-            >
-              <template #append>
-                <el-image :src="codeUrl" @click="createCode" draggable="false">
-                  <template #placeholder>
-                    <el-icon><Picture /></el-icon>
-                  </template>
-                  <template #error>
-                    <el-icon><Loading /></el-icon>
-                  </template>
-                </el-image>
-              </template>
-            </el-input>
-          </el-form-item> -->
           <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin"> 登 录 </el-button>
         </el-form>
       </div>
