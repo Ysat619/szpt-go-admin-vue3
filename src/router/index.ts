@@ -190,7 +190,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: "list",
-        component: () => import("@/views/user/index.vue"),
+        component: () => import("@/views/order/list.vue"),
         name: "ElementPlus",
         meta: {
           title: "订单列表",
