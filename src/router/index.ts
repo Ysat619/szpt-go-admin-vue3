@@ -199,9 +199,9 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       },
       {
-        path: "vxe-table",
-        component: () => import("@/views/user/index.vue"),
-        name: "VxeTable",
+        path: "rate-list",
+        component: () => import("@/views/order/rate-list.vue"),
+        name: "rate-list",
         meta: {
           title: "评价列表",
           keepAlive: true,

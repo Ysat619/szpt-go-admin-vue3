@@ -4,6 +4,11 @@ export interface Responce<T> {
   data: T
 }
 
+export interface PageRecordData<T> {
+  total: number
+  records: T[]
+}
+
 export interface Page {
   current: number
   size: number
