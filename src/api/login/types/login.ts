@@ -1,3 +1,5 @@
+import { Responce } from "@/api/type"
+
 export interface ILoginRequestData {
   /** admin 或 editor */
   username: string
@@ -23,8 +25,8 @@ export interface IUser {
   token: null | string
 }
 
-export type LoginCodeResponseData = IApiResponseData<string>
+export type LoginCodeResponseData = Responce<string>
 
-export type LoginResponseData = IApiResponseData<{ token: string }>
+export type LoginResponseData = Responce<IUser>
 
-export type UserInfoResponseData = IApiResponseData<{ username: string; roles: string[] }>
+export type UserInfoResponseData = Responce<IUser>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useAppStore } from "@/store/modules/app"
 import { useSettingsStore } from "@/store/modules/settings"
@@ -15,6 +15,8 @@ const router = useRouter()
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const userStore = useUserStore()
+
+const imgBase = ref<string>(import.meta.env.VITE_IMAGE_BASE_API)
 
 const sidebar = computed(() => {
   return appStore.sidebar
@@ -48,7 +50,7 @@ const logout = () => {
       <Notify v-if="showNotify" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
         <div class="right-menu-avatar">
-          <el-avatar :icon="UserFilled" :size="30" />
+          <el-avatar :icon="UserFilled" :src="imgBase + userStore.userInfo.avatar" :size="30" />
           <span>{{ userStore.username }}</span>
         </div>
         <template #dropdown>

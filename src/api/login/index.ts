@@ -22,7 +22,7 @@ export function loginApi(data: Login.ILoginRequestData) {
 /** 获取用户详情 */
 export function getUserInfoApi() {
   return request<Login.UserInfoResponseData>({
-    url: "/TbUser/1",
+    url: "/TbUser/getInfo",
     method: "get"
   })
 }

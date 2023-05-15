@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { getCurrentInstance, reactive, ref, watch } from "vue"
-import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
+import { type FormInstance, ElMessage, ElMessageBox } from "element-plus"
 import { Search, Refresh, CirclePlus, Delete, RefreshRight, EditPen, Goods } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
 import GoodsAddForm from "./add.vue"
@@ -163,7 +163,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
             </template>
           </el-table-column>
           <el-table-column prop="goodInfo" label="商品简介" align="center" />
-          <el-table-column prop="status" min-width="120" align="left" label="价格">
+          <el-table-column prop="status" min-width="160px" align="left" label="价格">
             <template #default="scope">
               <el-row> <el-tag type="info">原价</el-tag>￥{{ scope.row.otPrice }}/{{ scope.row.unitName }} </el-row>
               <el-row style="margin-top: 5px"

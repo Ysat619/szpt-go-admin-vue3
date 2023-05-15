@@ -6,7 +6,7 @@ import { useTagsViewStore } from "./tags-view"
 import { getToken, removeToken, setToken } from "@/utils/cache/cookies"
 import router, { resetRouter } from "@/router"
 import { loginApi, getUserInfoApi } from "@/api/login"
-import { type ILoginRequestData } from "@/api/login/types/login"
+import { IUser, type ILoginRequestData } from "@/api/login/types/login"
 import { type RouteRecordRaw } from "vue-router"
 import asyncRouteSettings from "@/config/async-route"
 
@@ -14,7 +14,7 @@ export const useUserStore = defineStore("user", () => {
   const token = ref<string>(getToken() || "")
   const roles = ref<string[]>([])
   const username = ref<string>("")
-
+  const userInfo = ref<IUser>()
   const permissionStore = usePermissionStore()
   const tagsViewStore = useTagsViewStore()
 
@@ -46,6 +46,7 @@ export const useUserStore = defineStore("user", () => {
       getUserInfoApi()
         .then((res) => {
           const data: any = res.data
+          userInfo.value = res.data
           username.value = data.name
           // 验证返回的 roles 是否是一个非空数组
           if (data.roles && data.roles.length > 0) {
@@ -94,7 +95,7 @@ export const useUserStore = defineStore("user", () => {
     tagsViewStore.delAllCachedViews()
   }
 
-  return { token, roles, username, setRoles, login, getInfo, changeRoles, logout, resetToken }
+  return { token, roles, username, setRoles, login, getInfo, changeRoles, logout, resetToken, userInfo }
 })
 
 /** 在 setup 外使用 */
